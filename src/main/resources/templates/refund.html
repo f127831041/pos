@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <form id="activityForm">
+            <div class="container-fluid pt-4 px-4">
+                <h3 class="mb-4">商品退貨</h3>
+                <div class="row g-4">
+                    <div class="col-sm">
+                        <div class="bg-light rounded h-100 p-4">
+                            <div class="row">
+                                <div class="col-md">
+                                    <h6>商品輸入</h6>
+                                </div>
+                                <div class="col-md">
+                                    <button type="button" class="btn btn-warning float-end" onclick="addProd()">
+                                        <i class="fas fa-plus-circle"></i>加入
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md">
+                                    <label class="form-label">品牌</label>
+                                    <select class="form-select select2" style="width: 100%;" id="companyId"
+                                            onchange="changeCompany(this.value);">
+                                        <option selected="selected" value="">- 請選擇 -</option>
+                                        <th:block th:each="company :${companyList}">
+                                            <option th:value="${company.id}" th:text="${company.brand}"></option>
+                                        </th:block>
+                                    </select>
+                                </div>
+                                <div class="col-md">
+                                    <label class="form-label">型號</label>
+                                    <select class="form-select select2" style="width: 100%;" id="productId">
+                                        <option value="">- 請選擇 -</option>
+                                        <th:block th:each="product :${productList}"
+                                                  th:with="design = ${#strings.isEmpty(product.design)? '':'-'+product.design},
+                                                               color = ${#strings.isEmpty(product.color)? '':'-'+product.color}">
+                                            <option th:value="${product.id}"
+                                                    th:text="${product.prodNo + '-' + product.name + design + color}"></option>
+                                        </th:block>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="bg-light rounded h-100 p-4">
+                            <div class="row">
+                                <div class="col-md">
+                                    <h6>會員資訊</h6>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-warning float-end" onclick="queryMember()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-warning float-start" onclick="cleanMember()"><i
+                                            class="fa fa-trash"></i>清除
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md">
+                                    <label for="phone" class="form-label">電話</label>
+                                    <input type="text" class="form-control" name="phone" autocomplete="off" id="phone"
+                                           placeholder="請輸入電話號碼"
+                                           maxlength="100"/>
+                                </div>
+                                <div class="col-md">
+                                    <label class="form-label">姓名</label>
+                                    <input type="text" class="form-control" id="cname" readonly
+                                           th:value="${session.member?.cname}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md">
+                                    <label class="form-label">紅利點數</label>
+                                    <input type="text" class="form-control" id="points" readonly
+                                           th:value="${session.member?.points}">
+                                </div>
+                                <div class="col-md">
+                                    <label class="form-label">生日</label>
+                                    <input type="text" class="form-control" id="birthday" readonly
+                                           th:value="${session.member ne null ? session.member?.month +'/'+session.member?.day :''}">
+                                </div>
+                            </div>
+                            <input type="hidden" class="form-control" id="memberId" th:value="${session.member?.id}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-light text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h6 class="mb-0">商品列表</h6>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table text-start align-middle table-bordered table-hover mb-0" id="table">
+                            <thead>
+                            <tr class="text-dark">
+                                <th scope="col" class="d-none">ID</th>
+                                <th scope="col">品牌</th>
+                                <th scope="col">型號</th>
+                                <th scope="col">品項</th>
+                                <th scope="col">圖案</th>
+                                <th scope="col">顏色</th>
+                                <th scope="col">尺寸</th>
+                                <th scope="col">單價</th>
+                                <th scope="col">數量</th>
+                                <th scope="col">總價</th>
+                                <th scope="col">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="data"></tbody>
+                            <tfoot>
+                            <tr class="text-dark">
+                                <td colspan="8" class="text-end">總金額</td>
+                                <td colspan="2" id="total">0</td>
+                            </tr>
+                            <tr class="text-dark">
+                                <td colspan="8" class="text-end">已使用紅利</td>
+                                <td colspan="2">-
+                                    <input type="text" value="0" id="bonus" onblur="blurMoney(this.value)"/>
+                                </td>
+                            </tr>
+                            <tr class="text-dark">
+                                <td colspan="8" class="text-end">小計</td>
+                                <td colspan="2" id="pay">0</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-sm">
+                            <div class="bg-light rounded h-100 p-4">
+                                <div class="row">
+                                    <div class="col-md"></div>
+                                    <div class="col-md"></div>
+                                    <div class="col-md">
+                                        <label class="form-label">支付方式：</label>
+                                        <input type="radio" name="payMethod" id="cash" checked="checked" value="1"/>
+                                        <label class="" for="cash">現金</label>
+                                        <input type="radio" name="payMethod" id="linePay" value="2"/>
+                                        <label class="" for="linePay">Line Pay</label>
+                                        <input type="radio" name="payMethod" id="card" value="3"/>
+                                        <label class="" for="card">信用卡</label>
+                                    </div>
+                                    <div class="col-md">
+                                        <button type="button" class="btn btn-warning w-100" onclick="save()">確定</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('refund.js')"/>
+<script th:inline="javascript">
+    let productList = [[${productList}]];
+    let sizeChartList = [[${sizeChartList}]];
+    let companyList = [[${companyList}]];
+    let productObj = {};
+    let companyObj = {};
+    for(let product of productList){
+        productObj[product.id] = product;
+    }
+    for(let company of companyList){
+        companyObj[company.id] = company;
+    }
+</script>
+</html>

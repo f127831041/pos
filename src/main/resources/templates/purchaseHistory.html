@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3 class="mb-4">進貨紀錄</h3>
+                        <form id="queryForm">
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">日期</label>
+                                        <div class="input-group">
+                                            <input class="date form-control pull-right" name="date" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">品牌</label>
+                                        <select class="form-select select2" style="width: 100%;" name="companyId">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <th:block th:each="company :${companyList}">
+                                                <option th:value="${company.id}" th:text="${company.brand}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">廠商訂單號</label>
+                                        <input type="text" name="companyOrderNo" class="form-control" maxlength="100" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col text-end">
+                                    <button type="button" class="btn btn-warning" onclick="query()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light rounded h-90 p-4">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap5">
+                            <table id="dataTable" class="table table-hover table-striped table-bordered"
+                                   style="width:100%">
+                                <!-- datatable content -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="historyListModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog" style="max-width: 95%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">進貨明細</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="historyListForm" class="form-horizontal">
+                        <div class="modal-body">
+                            <div class="dataTables_wrapper dt-bootstrap5">
+                                <table id="dataTable2" class="table table-hover table-striped table-bordered"
+                                       style="width: 100%">
+                                    <tfoot>
+                                    <tr>
+                                        <th colspan="10">合計總金額</th>
+                                        <th id="total"></th>
+                                        <th id="tariffPay"></th>
+                                        <th></th>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <input type="hidden" name="buyNo" id="buyNo"/>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">
+                                <i class="fas fa-ban"></i>關閉
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="historyModal">
+            <div class="modal-dialog modal-lg" style="width: 30%">
+                <div class="modal-content">
+                    <th:block th:fragment="history">
+                        <div class="modal-header">
+                            <h4 class="modal-title" th:text="${vo?.id eq null ? '新增':'編輯'}"></h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="historyForm" class="form-horizontal">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">價格：</label>
+                                        <input type="text" class="form-control" name="price"
+                                               autocomplete="off" th:value="${vo?.price}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" th:value="${vo?.id}"/>
+                            <input type="hidden" id="action" th:value="${vo?.id eq null ? 'add': 'edit'}">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary me-auto close" data-bs-dismiss="modal">
+                                    <i class="fas fa-ban"></i>關閉
+                                </button>
+                                <button type="submit" class="btn btn-primary ms-auto save" onclick="save()">
+                                    <i class="fas fa-save"></i>儲存
+                                </button>
+                            </div>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('purchaseHistory.js')"/>
+</html>

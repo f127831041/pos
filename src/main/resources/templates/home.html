@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-sm col-xl">
+                    <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                        <i class="fa fa-chart-line fa-3x text-primary"></i>
+                        <div class="ms-3">
+                            <p class="mb-2">今日營收</p>
+                            <h6 class="mb-0" th:text="${'$'+todayPay}"></h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm col-xl">
+                    <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                        <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                        <div class="ms-3">
+                            <p class="mb-2">本月營收</p>
+                            <h6 class="mb-0" th:text="${'$'+monthPay}"></h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm col-xl">
+                    <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                        <i class="fa fa-chart-area fa-3x text-primary"></i>
+                        <div class="ms-3">
+                            <p class="mb-2">今日退費</p>
+                            <h6 class="mb-0" th:text="${'$'+todayRefund}"></h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm col-xl">
+                    <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                        <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                        <div class="ms-3">
+                            <p class="mb-2">本月退費</p>
+                            <h6 class="mb-0" th:text="${'$'+monthRefund}"></h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-sm col-sm" style="width: 49.8%">
+                    <div class="bg-light text-center rounded p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h6 class="mb-0">品牌銷售量</h6>
+                        </div>
+                        <canvas id="company-sales"></canvas>
+                    </div>
+                </div>
+                <div class="col-sm col-sm" style="width: 49.8%">
+                    <div class="bg-light text-center rounded p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h6 class="mb-0">營業額</h6>
+                        </div>
+                        <canvas id="revenue-sales"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('home.js')"/>
+<script th:inline="javascript">
+    let companyList = [[${companyChart.companyList}]];
+    let companyDateList = [[${companyChart.dateList}]];
+    let companyDataObj = [[${companyChart.dataMap}]];
+
+    let revenueChartDateList = [[${revenueChart.dateList}]];
+    let revenueChartDataList = [[${revenueChart.dataList}]];
+</script>
+</html>

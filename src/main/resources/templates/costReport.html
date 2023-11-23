@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3 class="mb-4">進貨成本</h3>
+                        <form id="queryForm">
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">日期</label>
+                                        <div class="input-group">
+                                            <input class="date form-control pull-right" name="date" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">品牌</label>
+                                        <select class="form-select select2" style="width: 100%;" name="companyId">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <th:block th:each="company :${companyList}">
+                                                <option th:value="${company.id}" th:text="${company.brand}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                                <div class="col"></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col text-end">
+                                    <button type="button" class="btn btn-warning" onclick="query()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light rounded h-90 p-4">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap5">
+                            <table id="dataTable" class="table table-hover table-striped table-bordered"
+                                   style="width:100%">
+                                <!-- datatable content -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('costReport.js')"/>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="sidebar">
+    <div class="sidebar pe-4 pb-3">
+        <nav class="navbar bg-light navbar-light">
+            <a th:href="@{'/home'}" class="navbar-brand mx-4 mb-3">
+                <h3 class="text-primary">銷售管理平台</h3>
+            </a>
+            <div class="d-flex align-items-center ms-4 mb-4">
+                <div class="position-relative">
+                    <img class="rounded-circle" th:src="@{'/images/man-user.svg'}" alt=""
+                         style="width: 40px; height: 40px;">
+                    <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0" th:text="${session.manager.cname}"></h6>
+                    <span th:text="${session.manager.account}"></span>
+                </div>
+            </div>
+            <ul class="navbar-nav w-100">
+                <th:block th:each="menuGroup:${session.menuGroupList}">
+                    <li class="nav-item" th:if="${#lists.isEmpty(menuGroup.menuList)}">
+                        <a th:with="key = ${#httpServletRequest.requestURI.split('/')[2]}"
+                           th:href="@{'/'+${menuGroup.page}}"
+                           th:class="${key eq menuGroup.page ? 'nav-link active':'nav-link'}"
+                           th:inline="text">
+                            <th:block th:switch="${menuGroup.id}">
+                                <i th:case="1" class="fa fa-laptop me-2"></i>
+                                <i th:case="2" class="fa fa-laptop me-2"></i>
+                                <i th:case="3" class="fa fa-users me-2"></i>
+                                <i th:case="4" class="fa fa-balance-scale me-2"></i>
+                                <i th:case="5" class="fa fa-table me-2"></i>
+                                <i th:case="6" class="fa fa-book me-2"></i>
+                                <i th:case="7" class="fa fa-user me-2"></i>
+                                <i th:case="8" class="fa fa-shopping-bag me-2"></i>
+                                <i th:case="9" class="fa fa-fire"></i>
+                            </th:block>
+                            [[${menuGroup.name}]]
+                        </a>
+                    </li>
+                    <!--子選單-->
+                    <li class="nav-item dropdown"
+                        th:unless="${#lists.isEmpty(menuGroup.menuList)}" th:with="key = ${#httpServletRequest.requestURI.split('/')[2]}">
+                        <a href="javascript:void (0)"
+                           th:class="${menuGroup.menuList.contains(key) ? 'nav-link dropdown-toggle show': 'nav-link dropdown-toggle'}" data-bs-toggle="dropdown"
+                           th:aria-expanded="${menuGroup.menuList.contains(key) ? true: false}"
+                           th:inline="text">
+                            <th:block th:switch="${menuGroup.id}">
+                                <i th:case="1" class="fa fa-laptop me-2"></i>
+                                <i th:case="2" class="fa fa-laptop me-2"></i>
+                                <i th:case="3" class="fa fa-users me-2"></i>
+                                <i th:case="4" class="fa fa-balance-scale me-2"></i>
+                                <i th:case="5" class="fa fa-table me-2"></i>
+                                <i th:case="6" class="fa fa-book me-2"></i>
+                                <i th:case="7" class="fa fa-user me-2"></i>
+                            </th:block>
+                            [[${menuGroup.name}]]
+                        </a>
+                        <div th:class="${menuGroup.menuList.contains(key) ? 'dropdown-menu bg-transparent border-0 show':'dropdown-menu bg-transparent border-0'}">
+                            <th:block th:each="menu:${menuGroup.menuList}">
+                                <a th:href="@{'/'+${menu.page}}"
+                                   th:with="key = ${#httpServletRequest.requestURI.split('/')[2]}"
+                                   th:class="${key eq menu.page ? 'dropdown-item active':'dropdown-item'}" th:text="${menu.name}">
+                                </a>
+                            </th:block>
+                        </div>
+                    </li>
+                </th:block>
+            </ul>
+        </nav>
+    </div>
+</th:block>
+</html>

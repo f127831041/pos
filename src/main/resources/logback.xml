@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
+<!--scan：配置檔案發生更改時，進行過載，預設值為true-->
+<!--scanPeriod：監測配置檔案是否有修改的時間間隔，預設值為6000，預設單位為毫秒-->
+<!--debug：列印logback內部日誌資訊，實時檢視logback執行狀態，預設值為false-->
+<configuration scan="true" scanPeriod="2 seconds" debug="false">
+    <!--定義日誌檔案的儲存地址-->
+    <property name="LOG_PATH" value="C:/logs"/>
+    <!--格式化輸出：%d表示日期，%-5level：級別從左顯示5個字元寬度，%t表示執行緒名，%msg：日誌訊息，%n是換行符-->
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] ${PID:-} --- [%t] %logger{50} - %msg%n"/>
+    <!-- 控制檯輸出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- error級別日誌檔案輸出 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 日誌輸出級別，優先順序 > '<root level>' -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <File>${LOG_PATH}/error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>1000MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 預設日誌輸出級別 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <root level="ERROR ">
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+    <Logger name="org.hibernate" level="error">
+        <appender-ref ref="STDOUT"/>
+    </Logger>
+
+    <Logger name="org.hibernate.SQL" level="error">
+        <appender-ref ref="STDOUT"/>
+    </Logger>
+
+    <Logger name="org.asynchttpclient" level="error">
+        <appender-ref ref="STDOUT"/>
+    </Logger>
+</configuration>

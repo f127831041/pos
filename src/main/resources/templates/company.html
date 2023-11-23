@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3 class="mb-4">品牌資訊</h3>
+                        <form id="queryForm">
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">品牌名稱</label>
+                                        <input type="text" class="form-control" name="brand" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">行動電話</label>
+                                        <input type="text" class="form-control" name="mobilePhone" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">市話</label>
+                                        <input type="text" class="form-control" name="phone" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">地址</label>
+                                        <input type="text" class="form-control" name="address" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">業務姓名</label>
+                                        <input type="text" class="form-control" name="saleName" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                                <div class="col"></div>
+                                <div class="col"></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col text-end">
+                                    <button type="button" class="btn btn-warning" onclick="dialogOpen(-1)"><i
+                                            class="fa fa-plus-circle"></i>新增
+                                    </button>
+                                    <button type="button" class="btn btn-warning search" onclick="query()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light rounded h-90 p-4">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap5">
+                            <table id="dataTable" class="table table-hover table-striped table-bordered"
+                                   style="width:100%">
+                                <!-- datatable content -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="companyModal">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <th:block th:fragment="company">
+                        <div class="modal-header">
+                            <h4 class="modal-title" th:text="${vo?.id eq null ? '新增':'編輯'}"></h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="companyForm" class="form-horizontal">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">品牌名稱：</label>
+                                        <input type="text" class="form-control" name="brand" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.brand}"/>
+                                    </div>
+                                    <div class="col-md"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <label class="form-label">業務姓名1：</label>
+                                        <input type="text" class="form-control" name="salesName" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.salesName1}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <label class="form-label">業務姓名2：</label>
+                                        <input type="text" class="form-control" name="salesName2" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.salesName2}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <label class="form-label">行動電話1：</label>
+                                        <input type="text" class="form-control" name="mobilePhone" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.mobilePhone1}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <label class="form-label">行動電話2：</label>
+                                        <input type="text" class="form-control" name="mobilePhone2" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.mobilePhone2}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <label class="form-label">市話1：</label>
+                                        <input type="text" class="form-control" name="phone" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.phone1}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <label class="form-label">市話2：</label>
+                                        <input type="text" class="form-control" name="phone2" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.phone2}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <label class="form-label">地址1：</label>
+                                        <input type="text" class="form-control" name="address" maxlength="200"
+                                               autocomplete="off" th:value="${vo?.address1}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <label class="form-label">地址2：</label>
+                                        <input type="text" class="form-control" name="address2" maxlength="200"
+                                               autocomplete="off" th:value="${vo?.address2}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" th:value="${vo?.id}"/>
+                            <input type="hidden" id="action" th:value="${vo?.id eq null ? 'add': 'edit'}">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary me-auto close" data-bs-dismiss="modal">
+                                    <i class="fas fa-ban"></i>關閉
+                                </button>
+                                <button type="submit" class="btn btn-primary ms-auto save" onclick="save()">
+                                    <i class="fas fa-save"></i>儲存
+                                </button>
+                            </div>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('company.js')"/>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="navbar">
+    <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+        <a th:href="@{'/home'}" class="navbar-brand d-flex d-lg-none me-4">
+            <h2 class="text-primary mb-0"><i class="fa fa-desktop"></i></h2>
+        </a>
+        <a href="#" class="sidebar-toggler flex-shrink-0">
+            <i class="fa fa-bars"></i>
+        </a>
+        <div class="navbar-nav align-items-center ms-auto">
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <img class="rounded-circle me-lg-2" th:src="@{'/images/man-user.svg'}" alt="" style="width: 40px; height: 40px;">
+                    <span class="d-none d-lg-inline-flex" th:text="${session.manager.cname}"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                    <a href="#detail" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#profileModal">個人資訊</a>
+                    <a th:href="@{'/login'}" onclick="return logOut();" class="dropdown-item">登 出</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</th:block>
+</html>

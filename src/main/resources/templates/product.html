@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3 class="mb-4">產品型錄</h3>
+                        <form id="queryForm">
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">品牌</label>
+                                        <select class="form-select select2" style="width: 100%;" name="companyId">
+                                            <option value="">- 請選擇 -</option>
+                                            <th:block th:each="company:${companyList}">
+                                                <option th:value="${company.id}" th:text="${company.brand}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">型號</label>
+                                        <input type="text" class="form-control" name="prodNo" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">品項</label>
+                                        <input type="text" class="form-control" name="name" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">圖案</label>
+                                        <input type="text" class="form-control" name="design" autocomplete="off">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">顏色</label>
+                                        <input type="text" class="form-control" name="color" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">進貨價格</label>
+                                        <input type="text" class="form-control" name="purchasePrice" placeholder="請輸入數字"
+                                               autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">販售價格</label>
+                                        <input type="text" class="form-control" name="price" placeholder="請輸入數字"
+                                               autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">狀態</label>
+                                    <select class="form-select select2" style="width: 100%;" name="status">
+                                        <option value="">- 請選擇 -</option>
+                                        <option value="1">上架</option>
+                                        <option value="0">下架</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col text-end">
+                                    <button type="button" class="btn btn-warning" onclick="dialogOpen(-1)"><i
+                                            class="fa fa-plus-circle"></i>新增
+                                    </button>
+                                    <button type="button" class="btn btn-warning search" onclick="query()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light rounded h-90 p-4">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap5">
+                            <table id="dataTable" class="table table-hover table-striped table-bordered"
+                                   style="width: 100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <th:block th:fragment="product">
+                        <div class="modal-header">
+                            <h4 class="modal-title" th:text="${vo?.id < 0 ? '新增':'編輯'}"></h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="productForm" class="form-horizontal">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">品牌：</label>
+                                        <select class="form-select select2" style="width: 100%;" name="companyId">
+                                            <option value="">- 請選擇 -</option>
+                                            <th:block th:each="company:${companyList}">
+                                                <option th:value="${company.id}" th:text="${company.brand}" th:selected="${vo?.company?.Id eq company.id}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">型號：</label>
+                                        <input type="text" class="form-control" name="prodNo" autocomplete="off"
+                                               maxlength="100" th:value="${vo?.prodNo}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">品項：</label>
+                                        <input type="text" class="form-control" name="name" autocomplete="off"
+                                               maxlength="100" th:value="${vo?.name}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">狀態：</label>
+                                        <select class="form-select select2" style="width: 100%;" name="status">
+                                            <option value="1" th:selected="${vo?.status eq '1'}">上架</option>
+                                            <option value="0" th:selected="${vo?.status eq '0'}">下架</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <label class="form-label">圖案：</label>
+                                        <input type="text" class="form-control" name="design" autocomplete="off"
+                                               maxlength="20" th:value="${vo?.design}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <label class="form-label">顏色：</label>
+                                        <input type="text" class="form-control" name="color" autocomplete="off"
+                                               maxlength="20" th:value="${vo?.color}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">進貨價格：</label>
+                                        <input type="text" class="form-control" name="purchasePrice" autocomplete="off"
+                                               maxlength="7" th:value="${vo?.purchasePrice}"/>
+                                    </div>
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">販售價格：</label>
+                                        <input type="text" class="form-control" name="price" autocomplete="off"
+                                               maxlength="7" th:value="${vo?.price}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" th:value="${vo?.id}"/>
+                            <input type="hidden" id="action" th:value="${vo?.id < 0 ? 'add': 'edit'}">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary me-auto close" data-bs-dismiss="modal">
+                                    <i class="fas fa-ban"></i>關閉
+                                </button>
+                                <button type="submit" class="btn btn-primary ms-auto save" onclick="save()">
+                                    <i class="fas fa-save"></i>儲存
+                                </button>
+                            </div>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('product.js')"/>
+</html>

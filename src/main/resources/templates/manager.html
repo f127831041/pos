@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3 class="mb-4">管理者帳號</h3>
+                        <form id="queryForm">
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">帳號</label>
+                                        <input type="text" class="form-control" name="account" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" name="cname" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">狀態</label>
+                                        <select class="form-select select2" style="width: 100%;" name="status">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <option value="1">啟用</option>
+                                            <option value="0">停用</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">電話</label>
+                                        <input type="text" class="form-control" name="phone" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col text-end">
+                                    <button type="button" class="btn btn-warning" onclick="dialogOpen(-1)"><i
+                                            class="fa fa-plus-circle"></i>新增
+                                    </button>
+                                    <button type="button" class="btn btn-warning search" onclick="query()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light rounded h-90 p-4">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap5">
+                            <table id="dataTable" class="table table-hover table-striped table-bordered"
+                                   style="width:100%">
+                                <!-- datatable content -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="managerModal" tabindex="-1" aria-hidden="true" >
+            <div class="modal-dialog modal-lg" style="width: 30%;">
+                <div class="modal-content">
+                    <th:block th:fragment="manager">
+                        <div class="modal-header">
+                            <h4 class="modal-title" th:text="${vo?.id eq null ? '新增':'編輯'}"></h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="managerForm" class="form-horizontal">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span class="mark-required">*</span>
+                                        <label class="col-sm-2 col-form-label">帳號</label>
+                                        <input type="text" class="form-control" name="account" maxlength="100"
+                                               autocomplete="off" th:value="${vo?.account}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="col-sm-2 col-form-label">密碼</label>
+                                        <input type="password" class="form-control" name="password" maxlength="100"
+                                               autocomplete="off" th:placeholder="${vo?.id eq null ? '': '不修改請留空白'}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="col-sm-2 col-form-label">姓名</label>
+                                        <input type="text" class="form-control" name="cname" maxlength="20"
+                                               autocomplete="off" th:value="${vo?.cname}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="col-sm-2 col-form-label">電話</label>
+                                        <input type="text" class="form-control" name="phone" maxlength="20"
+                                               autocomplete="off" th:value="${vo?.phone}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="col-sm-2 col-form-label">狀態</label>
+                                        <select class="form-select select2" style="width: 100%;"
+                                                name="status">
+                                            <option value="1" th:selected="${vo?.status eq '1'}">啟用</option>
+                                            <option value="0" th:selected="${vo?.status eq '0'}">停用</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" th:value="${vo?.id}"/>
+                            <input type="hidden" id="action" th:value="${vo?.id eq null ? 'add': 'edit'}">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary me-auto close" data-bs-dismiss="modal">
+                                    <i class="fas fa-ban"></i>關閉
+                                </button>
+                                <button type="submit" class="btn btn-primary ms-auto save" onclick="save()">
+                                    <i class="fas fa-save"></i>儲存
+                                </button>
+                            </div>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('manager.js')"/>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<style>
+    .full-bg {
+        background-image: url(images/bg.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        /*height: 100vh; !* 設置高度以填滿整個屏幕 *!*/
+    }
+</style>
+<body class="full-bg">
+<div class="container-fluid position-relative d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show  position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Sign In Start -->
+    <div class="container-fluid">
+        <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h3 class="text-primary"></i>銷售管理平台</h3>
+                        <h3>Sign In</h3>
+                    </div>
+                    <form id="form">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="account" placeholder="帳號" autocomplete="off">
+                            <label>帳號</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" name="password" placeholder="密碼" autocomplete="off">
+                            <label>密碼</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary py-3 w-100 mb-4" onclick="login();">登 入</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Sign In End -->
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('login.js')"/>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3 class="mb-4">進貨資訊</h3>
+                        <form id="queryForm">
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">品牌</label>
+                                        <select class="form-select select2" style="width: 100%;" name="companyId"
+                                                onchange="changeCompany();">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <th:block th:each="company :${companyList}">
+                                                <option th:value="${company.id}" th:text="${company.brand}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">型號</label>
+                                        <select class="form-select select2" style="width: 100%;" name="prodNo">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <th:block th:each="prodNo :${prodNoList}">
+                                                <option th:value="${prodNo}"
+                                                        th:text="${prodNo}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">尺寸</label>
+                                        <select class="form-select select2" style="width: 100%;" name="sizeId">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <th:block th:each="sizeChart:${sizeChartList}">
+                                                <option th:value="${sizeChart.id}" th:text="${sizeChart.size}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="form-label">數量</label>
+                                        <input type="text" class="form-control" name="cnt" autocomplete="off"
+                                               placeholder="請輸入數字">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col text-end">
+                                    <button type="button" class="btn btn-warning" onclick="dialogOpen(-1)"><i
+                                            class="fa fa-plus-circle"></i>新增
+                                    </button>
+                                    <button type="button" class="btn btn-warning search" onclick="query()"><i
+                                            class="fa fa-search"></i>查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light rounded h-90 p-4">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap5">
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label"><span class="mark-required">※本次進貨單-品牌※</span></label>
+                                        <select class="form-select select2" style="width: 100%;" id="companyId">
+                                            <option selected="selected" value="">- 請選擇 -</option>
+                                            <th:block th:each="company :${companyList}">
+                                                <option th:value="${company.id}" th:text="${company.brand}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label"><span class="mark-required">※稅率※</span></label>
+                                        <input type="text" class="form-control" autocomplete="off" id="tariff"
+                                               placeholder="請輸入數字，若無稅率請填0">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label"></label>
+                                    <button type="button" class="btn btn-warning float-end" onclick="sendOrder()"><i
+                                            class="fas fa-save"></i>送出進貨
+                                    </button>
+                                </div>
+                            </div>
+                            <table id="dataTable" class="table table-hover table-striped table-bordered"
+                                   style="width:100%">
+                                <!-- datatable content -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <th:block th:fragment="purchase">
+                        <div class="modal-header">
+                            <h4 class="modal-title" th:text="${vo?.id < 0 ? '新增':'編輯'}"></h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="purchaseForm" class="form-horizontal">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">品牌：</label>
+                                        <select class="form-select select2" style="width: 100%;"
+                                                name="companyId" th:disabled="${vo?.id >0}">
+                                            <option th:value="${company?.id}" th:text="${company?.brand}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">型號：</label>
+                                        <select class="form-select select2" style="width: 100%;" name="productId"
+                                                th:disabled="${vo?.id >0}" onchange="changeProdNo(this.value)">
+                                            <option value="">- 請選擇 -</option>
+                                            <th:block th:each="product :${productList}"
+                                                      th:with="design = ${#strings.isEmpty(product.design)? '':'-'+product.design},
+                                                               color = ${#strings.isEmpty(product.color)? '':'-'+product.color}">
+                                                <option th:value="${product.id}"
+                                                        th:text="${product.prodNo + '-' + product.name + design + color}"
+                                                        th:selected="${vo?.product?.id eq product.id}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">尺寸：</label>
+                                        <select class="form-select select2" style="width: 100%;"
+                                                name="sizeId" th:disabled="${vo?.id >0}">
+                                            <th:block th:each="sizeChart:${sizeChartList}">
+                                                <option th:value="${sizeChart.id}"
+                                                        th:selected="${vo?.sizeChart?.id eq sizeChart.id}"
+                                                        th:text="${sizeChart.size}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">數量：</label>
+                                        <input type="text" class="form-control" name="cnt" autocomplete="off"
+                                               placeholder="請輸入數字" th:value="${vo?.cnt}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <span class="mark-required">*</span>
+                                        <label class="form-label">價格：</label>
+                                        <input type="text" class="form-control" name="price" autocomplete="off" readonly
+                                               id="price" placeholder="請輸入數字" th:value="${vo?.price}">
+                                    </div>
+                                    <div class="col-md">
+                                        <label class="form-label">稅率%：</label>
+                                        <input type="text" class="form-control" name="tariff" autocomplete="off" readonly th:value="${vo?.tariff}">
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" th:value="${vo?.id}"/>
+                            <input type="hidden" id="action" th:value="${vo?.id < 0 ? 'add': 'edit'}">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary me-auto close" data-bs-dismiss="modal">
+                                    <i class="fas fa-ban"></i>關閉
+                                </button>
+                                <button type="submit" class="btn btn-primary ms-auto save" onclick="save()">
+                                    <i class="fas fa-save"></i>儲存
+                                </button>
+                            </div>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="dateModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg" style="width: 35%;">
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">新增</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="dateForm" class="form-horizontal">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="col-sm-2 col-form-label">進貨日期</label>
+                                        <input type="date" name="purchaseDate" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="col-sm-2 col-form-label">廠商訂單代碼</label>
+                                        <input type="text" name="companyOrderNo" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <input id="buyNo" type="hidden"/>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary me-auto close" data-bs-dismiss="modal">
+                                    <i class="fas fa-ban"></i>關閉
+                                </button>
+                                <button type="button" class="btn btn-primary ms-auto save" onclick="saveBuy()">
+                                    <i class="fas fa-save"></i>確認送出
+                                </button>
+                            </div>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('purchase.js')"/>
+<script th:inline="javascript">
+    let productList = [[${productList}]];
+    let productObj = {};
+    for(let product of productList){
+        productObj[product.id] = product;
+    }
+</script>
+</html>

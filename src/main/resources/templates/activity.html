@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="include/head :: head"></head>
+
+<body>
+<div class="container-fluid position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Sidebar Start -->
+    <th:block th:replace="include/sidebar :: sidebar"/>
+    <!-- Sidebar End -->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <th:block th:replace="include/navbar :: navbar"/>
+        <!-- Navbar End -->
+        <!-- Blank Start -->
+        <form id="activityForm">
+            <div class="container-fluid pt-4 px-4">
+                <h3 class="mb-4">門市活動</h3>
+                <div class="row g-4">
+                    <div class="col-sm">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">紅利點數</h6>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <span class="mark-required">*</span>
+                                    <label class="form-label">消費金額</label>
+                                    <input type="text" class="form-control" name="bonusMoney" autocomplete="off"
+                                           placeholder="請填入數字" th:value="${activity?.bonusMoney}">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <span class="mark-required">*</span>
+                                    <label class="form-label">是否啟用</label>
+                                    <select class="form-select select2" style="width: 100%;" name="bonusType">
+                                        <option th:selected="${activity?.bonusType eq null}" value="">- 請選擇 -</option>
+                                        <option th:selected="${activity?.bonusType eq '1'}" value="1">是</option>
+                                        <option th:selected="${activity?.bonusType eq '0'}" value="0">否</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <span class="mark-required">*</span>
+                                    <label class="form-label">紅利回饋換算(填1代表1點=1元)</label>
+                                    <input type="text" class="form-control" name="bonusConvert" autocomplete="off"
+                                           placeholder="請填入數字" th:value="${activity?.bonusConvert}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">滿額折扣</h6>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <span class="mark-required">*</span>
+                                    <label class="form-label">消費金額</label>
+                                    <input type="text" class="form-control" name="discountMoney" autocomplete="off"
+                                           placeholder="請填入數字" th:value="${activity?.discountMoney}">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <span class="mark-required">*</span>
+                                    <label class="form-label">是否啟用</label>
+                                    <select class="form-select select2" style="width: 100%;" name="discountType">
+                                        <option th:selected="${activity?.discountType eq null}" value="">- 請選擇 -
+                                        </option>
+                                        <option th:selected="${activity?.discountType eq '1'}" value="1">是</option>
+                                        <option th:selected="${activity?.discountType eq '0'}" value="0">否</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <span class="mark-required">*</span>
+                                    <label class="form-label">折扣(填9代表9折)</label>
+                                    <input type="text" class="form-control" name="discountConvert" autocomplete="off"
+                                           placeholder="請填入數字" th:value="${activity?.discountConvert}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm"></div>
+                    <div class="col-sm">
+                        <button type="submit" class="btn btn-primary float-end" onclick="save()">
+                            <i class="fas fa-save"></i>儲存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="id" th:value="${activity?.id}">
+        </form>
+        <!-- Blank End -->
+    </div>
+    <!-- Content End -->
+    <th:block th:replace="include/modal :: modal"/>
+</div>
+</body>
+<th:block th:replace="include/footer :: footer('activity.js')"/>
+</html>
